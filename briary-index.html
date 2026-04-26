@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briary — waar was ik</title>
+<meta name="description" content="Brain handoff tool voor chaos-breinen">
+<meta name="theme-color" content="#0e0d0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Briary">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0d0b;
+    --bg2: #161410;
+    --bg3: #1c1a16;
+    --ink: #f0ebe3;
+    --ink2: #a09890;
+    --ink3: #5a5650;
+    --accent: #c17b3f;
+    --accent2: rgba(193,123,63,0.15);
+    --accent3: rgba(193,123,63,0.06);
+    --green: #5a9e73;
+    --border: #252320;
+    --border2: #1e1c18;
+    --card: #131210;
+    --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 20px rgba(0,0,0,0.3);
+    --energy-high: #c17b3f;
+    --energy-mid: #8a7a6a;
+    --energy-stuck: #4a5568;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 0%, rgba(193,123,63,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 100%, rgba(90,158,115,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* SHORTCUTS HINT */
+  .shortcuts-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .shortcut {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--ink3);
+  }
+  .key {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    color: var(--ink2);
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(14,13,11,0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--accent); font-style: italic; }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .api-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink3);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .api-badge:hover { border-color: var(--accent); color: var(--accent); }
+  .api-badge.connected { color: var(--green); border-color: rgba(90,158,115,0.4); }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 28px 20px;
+  }
+
+  /* API SETUP */
+  .api-setup {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+  .api-setup.visible { display: block; }
+  .api-setup h3 { font-family: 'Instrument Serif', serif; font-size: 18px; margin-bottom: 6px; }
+  .api-setup p { font-size: 13px; color: var(--ink2); margin-bottom: 14px; line-height: 1.6; }
+  .api-setup input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: var(--bg2);
+    color: var(--ink);
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .api-setup input:focus { border-color: var(--accent); }
+
+  /* GREETING */
+  .greeting { margin-bottom: 28px; }
+  .greeting-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 6px;
+  }
+  .greeting h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(26px, 5vw, 36px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .greeting h1 em { color: var(--accent); font-style: italic; }
+
+  /* DAILY CHECK-IN STRIP */
+  .checkin-strip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .checkin-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    white-space: nowrap;
+  }
+  .checkin-projects {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+  .checkin-chip {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--ink2);
+    background: var(--bg2);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .checkin-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .checkin-chip.selected { border-color: var(--accent); color: var(--accent); background: var(--accent3); }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary { background: var(--ink); color: var(--bg); }
+  .btn-primary:hover { background: #d4cfc7; transform: translateY(-1px); }
+  .btn-accent { background: var(--accent); color: #0e0d0b; }
+  .btn-accent:hover { background: #d4894a; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--ink2); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--ink3); color: var(--ink); }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+  .btn-danger { background: rgba(220,38,38,0.12); color: #f87171; border: none; }
+  .btn-danger:hover { background: rgba(220,38,38,0.2); }
+
+  /* PROJECT CARDS */
+  .projects-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .projects-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card:hover {
+    border-color: var(--border2);
+    background: var(--bg3);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+
+  /* Energy color strip */
+  .project-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+    transition: opacity 0.2s;
+  }
+  .project-card.energy-high::before { background: var(--energy-high); }
+  .project-card.energy-mid::before { background: var(--energy-mid); }
+  .project-card.energy-stuck::before { background: var(--energy-stuck); }
+  .project-card.energy-none::before { background: var(--border); }
+
+  /* Keyboard number badge */
+  .project-num {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--ink3);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .project-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding-right: 28px;
+  }
+  .project-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+  .project-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--ink3);
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+
+  .energy-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .energy-badge.high { background: rgba(193,123,63,0.12); color: var(--accent); }
+  .energy-badge.mid { background: rgba(138,122,106,0.12); color: var(--energy-mid); }
+  .energy-badge.stuck { background: rgba(74,85,104,0.2); color: #718096; }
+
+  .project-last-thought {
+    font-size: 13px;
+    color: var(--ink2);
+    line-height: 1.5;
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .project-next-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink3);
+    font-family: 'DM Mono', monospace;
+  }
+  .next-arrow { color: var(--accent); }
+
+  /* DETAIL VIEW */
+  .detail-view {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    animation: slideIn 0.2s ease;
+  }
+  .detail-view.visible { display: block; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .detail-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  /* ENERGY PICKER */
+  .energy-picker {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .energy-option {
+    flex: 1;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .energy-option:hover { border-color: var(--ink3); }
+  .energy-option.selected { border-color: var(--accent); background: var(--accent3); }
+  .energy-option .emoji { font-size: 18px; }
+  .energy-option .label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); }
+  .energy-option.selected .label { color: var(--accent); }
+
+  .field-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 7px;
+  }
+  .field-group { margin-bottom: 18px; }
+
+  textarea, .detail-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    background: var(--bg2);
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea:focus, .detail-input:focus { border-color: var(--accent); }
+  textarea::placeholder, .detail-input::placeholder { color: var(--ink3); }
+
+  .next-step-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 14px;
+    transition: border-color 0.2s;
+  }
+  .next-step-input:focus-within { border-color: var(--accent); }
+  .next-step-arrow { color: var(--accent); font-size: 14px; flex-shrink: 0; }
+  .next-step-input input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .next-step-input input::placeholder { color: var(--ink3); }
+
+  /* AI RESULT */
+  .ai-result {
+    padding: 14px 16px;
+    background: var(--accent3);
+    border: 1px solid rgba(193,123,63,0.2);
+    border-radius: 9px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink);
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .ai-result.visible { display: block; }
+  .ai-result.loading { color: var(--ink3); font-style: italic; display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .ai-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 7px;
+  }
+  .ai-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .detail-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    margin-top: 20px;
+    display: none;
+  }
+  .timeline.visible { display: block; }
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border2);
+    position: relative;
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .timeline-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .timeline-item.has-handoff .timeline-dot { background: var(--accent); }
+  .timeline-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--ink3);
+    white-space: nowrap;
+    min-width: 90px;
+    margin-top: 2px;
+  }
+  .timeline-content { flex: 1; }
+  .timeline-raw { font-size: 13px; color: var(--ink2); line-height: 1.5; }
+  .timeline-next { font-size: 11px; color: var(--accent); font-family: 'DM Mono', monospace; margin-top: 3px; }
+  .timeline-handoff { font-size: 12px; color: var(--ink3); font-style: italic; margin-top: 4px; line-height: 1.5; }
+  .timeline-energy { font-size: 12px; margin-top: 2px; }
+
+  /* ADD PROJECT */
+  .add-project-form {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: none;
+    animation: slideIn 0.2s ease;
+    margin-bottom: 8px;
+  }
+  .add-project-form.visible { display: block; }
+  .add-project-form input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px;
+    background: var(--bg2);
+    color: var(--ink);
+    outline: none;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .add-project-form input:focus { border-color: var(--accent); }
+  .add-project-form input::placeholder { color: var(--ink3); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--ink3);
+  }
+  .empty-state .emoji { font-size: 36px; margin-bottom: 14px; }
+  .empty-state p { font-size: 13px; line-height: 1.6; max-width: 260px; margin: 0 auto 18px; }
+
+  @media (max-width: 480px) {
+    header { padding: 12px 16px; }
+    main { padding: 18px 12px; }
+    .detail-view { padding: 18px 16px; }
+    .shortcuts-bar { gap: 12px; padding: 8px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Bri<span>ary</span></div>
+  <div class="header-right">
+    <div class="api-badge" id="apiBadge" onclick="toggleApiSetup()">⚡ API</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- API SETUP -->
+  <div class="api-setup" id="apiSetup">
+    <h3>Verbind met Claude</h3>
+    <p>Voer je Anthropic API key in. Lokaal opgeslagen, alleen gebruikt voor de AI handoff functie.</p>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-accent" onclick="saveApiKey()">Opslaan</button>
+      <button class="btn btn-ghost" onclick="toggleApiSetup()">Annuleren</button>
+    </div>
+  </div>
+
+  <!-- GREETING -->
+  <div class="greeting">
+    <div class="greeting-time" id="greetingTime"></div>
+    <h1 id="greetingText">Waar was je <em>gebleven?</em></h1>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div class="detail-view" id="detailView">
+    <div class="detail-header">
+      <div class="detail-title" id="detailTitle"></div>
+      <button class="btn btn-ghost btn-sm" onclick="closeDetail()">← Terug</button>
+    </div>
+
+    <!-- ENERGY PICKER -->
+    <div class="field-group">
+      <div class="field-label">Energie op dit project</div>
+      <div class="energy-picker">
+        <div class="energy-option" data-energy="high" onclick="selectEnergy('high')">
+          <div class="emoji">🔥</div>
+          <div class="label">Hoog</div>
+        </div>
+        <div class="energy-option" data-energy="mid" onclick="selectEnergy('mid')">
+          <div class="emoji">😐</div>
+          <div class="label">Midden</div>
+        </div>
+        <div class="energy-option" data-energy="stuck" onclick="selectEnergy('stuck')">
+          <div class="emoji">🧱</div>
+          <div class="label">Vast</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THOUGHT -->
+    <div class="field-group">
+      <div class="field-label">Waar ben je mee bezig?</div>
+      <textarea id="thoughtInput" rows="3" placeholder="Dump alles wat er in je hoofd zit..."></textarea>
+    </div>
+
+    <!-- NEXT STEP -->
+    <div class="field-group">
+      <div class="field-label">Één volgende stap</div>
+      <div class="next-step-input">
+        <div class="next-step-arrow">→</div>
+        <input type="text" id="nextStepInput" placeholder="Wat is het eerste concrete ding als je dit opent?" />
+      </div>
+    </div>
+
+    <!-- AI RESULT -->
+    <div class="field-group" id="aiResultGroup" style="display:none">
+      <div class="ai-label"><div class="ai-dot"></div> Briary handoff</div>
+      <div class="ai-result" id="aiResult"></div>
+    </div>
+
+    <div class="detail-actions">
+      <button class="btn btn-accent" onclick="generateHandoff()">✦ AI handoff</button>
+      <button class="btn btn-primary" onclick="saveThought()">Opslaan</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleTimeline()">Tijdlijn</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteProject()">✕</button>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline" id="timeline">
+      <div class="field-label" style="margin-top:20px;margin-bottom:10px;">Activiteit tijdlijn</div>
+      <div id="timelineList"></div>
+    </div>
+  </div>
+
+  <!-- PROJECTS HEADER -->
+  <div class="projects-header">
+    <div class="projects-label" id="projectsLabel">Projecten</div>
+    <button class="btn btn-ghost btn-sm" onclick="toggleAddProject()">+ Nieuw</button>
+  </div>
+
+  <!-- ADD PROJECT -->
+  <div class="add-project-form" id="addProjectForm">
+    <input type="text" id="newProjectName" placeholder="Naam van het project..." />
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-accent" onclick="addProject()">Aanmaken</button>
+      <button class="btn btn-ghost" onclick="toggleAddProject()">Annuleren</button>
+    </div>
+  </div>
+
+  <!-- PROJECT LIST -->
+  <div id="projectList"></div>
+
+</main>
+
+<!-- SHORTCUTS BAR -->
+<div class="shortcuts-bar">
+  <div class="shortcut"><span class="key">1–9</span> open project</div>
+  <div class="shortcut"><span class="key">N</span> nieuw project</div>
+  <div class="shortcut"><span class="key">⌘↵</span> opslaan</div>
+  <div class="shortcut"><span class="key">Esc</span> terug</div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────
+let projects = JSON.parse(localStorage.getItem('briary_v2_projects') || '[]');
+let apiKey = localStorage.getItem('briary_api_key') || '';
+let currentProjectId = null;
+let currentEnergy = null;
+let timelineVisible = false;
+
+// ─── INIT ─────────────────────────────────────────────────
+function init() {
+  setGreeting();
+  updateApiBadge();
+  if (apiKey) document.getElementById('apiKeyInput').value = apiKey;
+
+  if (projects.length === 0) {
+    projects = [
+      { id: '1', name: 'VAUVE', thoughts: [], energy: null, createdAt: Date.now(), updatedAt: Date.now() },
+      { id: '2', name: 'Hormonely', thoughts: [], energy: null, createdAt: Date.now(), updatedAt: Date.now() },
+      { id: '3', name: 'Briary', thoughts: [], energy: 'high', createdAt: Date.now(), updatedAt: Date.now() }
+    ];
+    saveProjects();
+  }
+  renderProjects();
+}
+
+function setGreeting() {
+  const hour = new Date().getHours();
+  const days = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const day = days[new Date().getDay()];
+  const time = new Date().toLocaleTimeString('nl-NL', {hour:'2-digit',minute:'2-digit'});
+  document.getElementById('greetingTime').textContent = `${day} · ${time}`;
+
+  let g = 'Waar was je <em>gebleven?</em>';
+  if (hour < 12) g = 'Goedemorgen. Waar <em>begin</em> je?';
+  else if (hour >= 17) g = 'Wat neem je mee naar <em>morgen?</em>';
+  document.getElementById('greetingText').innerHTML = g;
+}
+
+// ─── API ──────────────────────────────────────────────────
+function toggleApiSetup() {
+  document.getElementById('apiSetup').classList.toggle('visible');
+}
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return;
+  apiKey = key;
+  localStorage.setItem('briary_api_key', key);
+  updateApiBadge();
+  toggleApiSetup();
+}
+function updateApiBadge() {
+  const badge = document.getElementById('apiBadge');
+  if (apiKey) {
+    badge.textContent = '✓ Claude';
+    badge.classList.add('connected');
+  } else {
+    badge.textContent = '⚡ API';
+    badge.classList.remove('connected');
+  }
+}
+
+// ─── PROJECTS ─────────────────────────────────────────────
+function saveProjects() {
+  localStorage.setItem('briary_v2_projects', JSON.stringify(projects));
+}
+
+function renderProjects() {
+  const list = document.getElementById('projectList');
+  const label = document.getElementById('projectsLabel');
+
+  if (projects.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="emoji">🌿</div><p>Nog geen projecten.</p><button class="btn btn-accent" onclick="toggleAddProject()">+ Eerste project</button></div>`;
+    label.textContent = 'Projecten';
+    return;
+  }
+
+  label.textContent = `${projects.length} project${projects.length !== 1 ? 'en' : ''}`;
+  const sorted = [...projects].sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0));
+
+  list.innerHTML = sorted.map((p, i) => {
+    const last = p.thoughts && p.thoughts.length > 0 ? p.thoughts[p.thoughts.length-1] : null;
+    const timeAgo = last ? formatTimeAgo(last.timestamp) : 'Nog niets';
+    const energyClass = p.energy ? `energy-${p.energy}` : 'energy-none';
+    const energyLabel = { high: '🔥 hoog', mid: '😐 midden', stuck: '🧱 vast' }[p.energy] || '';
+    const displayIndex = i + 1;
+
+    return `
+      <div class="project-card ${energyClass}" onclick="openProject('${p.id}')">
+        ${displayIndex <= 9 ? `<div class="project-num">${displayIndex}</div>` : ''}
+        <div class="project-card-top">
+          <div class="project-name">${p.name}</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+            <div class="project-meta">${timeAgo}</div>
+            ${energyLabel ? `<div class="energy-badge ${p.energy}">${energyLabel}</div>` : ''}
+          </div>
+        </div>
+        ${last ? `<div class="project-last-thought">"${last.raw}"</div>` : '<div class="project-last-thought" style="color:var(--ink3)">Nog niets opgeslagen...</div>'}
+        ${last && last.nextStep ? `<div class="project-next-step"><span class="next-arrow">→</span>${last.nextStep}</div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function toggleAddProject() {
+  const form = document.getElementById('addProjectForm');
+  form.classList.toggle('visible');
+  if (form.classList.contains('visible')) document.getElementById('newProjectName').focus();
+}
+
+function addProject() {
+  const name = document.getElementById('newProjectName').value.trim();
+  if (!name) return;
+  const project = { id: Date.now().toString(), name, thoughts: [], energy: null, createdAt: Date.now(), updatedAt: Date.now() };
+  projects.push(project);
+  saveProjects();
+  document.getElementById('newProjectName').value = '';
+  toggleAddProject();
+  renderProjects();
+  openProject(project.id);
+}
+
+function openProject(id) {
+  currentProjectId = id;
+  const project = projects.find(p => p.id === id);
+  if (!project) return;
+
+  document.getElementById('detailTitle').textContent = project.name;
+  document.getElementById('thoughtInput').value = '';
+  document.getElementById('nextStepInput').value = '';
+  document.getElementById('aiResult').textContent = '';
+  document.getElementById('aiResult').className = 'ai-result';
+  document.getElementById('aiResultGroup').style.display = 'none';
+  timelineVisible = false;
+  document.getElementById('timeline').classList.remove('visible');
+
+  // Restore energy
+  currentEnergy = project.energy || null;
+  document.querySelectorAll('.energy-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.energy === currentEnergy);
+  });
+
+  // Pre-fill last entry
+  const last = project.thoughts && project.thoughts.length > 0 ? project.thoughts[project.thoughts.length-1] : null;
+  if (last) {
+    document.getElementById('thoughtInput').placeholder = `Vorige keer: "${last.raw}"`;
+    if (last.nextStep) document.getElementById('nextStepInput').placeholder = `Vorige stap: "${last.nextStep}"`;
+  } else {
+    document.getElementById('thoughtInput').placeholder = 'Dump alles wat er in je hoofd zit...';
+    document.getElementById('nextStepInput').placeholder = 'Wat is het eerste concrete ding als je dit opent?';
+  }
+
+  document.getElementById('detailView').classList.add('visible');
+  document.getElementById('thoughtInput').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeDetail() {
+  document.getElementById('detailView').classList.remove('visible');
+  currentProjectId = null;
+  currentEnergy = null;
+  renderProjects();
+}
+
+function selectEnergy(level) {
+  currentEnergy = level;
+  document.querySelectorAll('.energy-option').forEach(el => {
+    el.classList.toggle('selected', el.dataset.energy === level);
+  });
+  // Update project energy immediately
+  const project = projects.find(p => p.id === currentProjectId);
+  if (project) { project.energy = level; project.updatedAt = Date.now(); saveProjects(); }
+}
+
+function saveThought() {
+  const raw = document.getElementById('thoughtInput').value.trim();
+  const nextStep = document.getElementById('nextStepInput').value.trim();
+  const handoff = document.getElementById('aiResult').textContent;
+  const project = projects.find(p => p.id === currentProjectId);
+  if (!project) return;
+
+  if (raw || nextStep) {
+    project.thoughts = project.thoughts || [];
+    project.thoughts.push({ raw: raw || '—', nextStep: nextStep || null, handoff: handoff || null, energy: currentEnergy, timestamp: Date.now() });
+    project.updatedAt = Date.now();
+    if (currentEnergy) project.energy = currentEnergy;
+    saveProjects();
+  }
+  closeDetail();
+}
+
+function deleteProject() {
+  if (!confirm('Project verwijderen?')) return;
+  projects = projects.filter(p => p.id !== currentProjectId);
+  saveProjects();
+  closeDetail();
+}
+
+function toggleTimeline() {
+  timelineVisible = !timelineVisible;
+  const tl = document.getElementById('timeline');
+  const project = projects.find(p => p.id === currentProjectId);
+
+  if (timelineVisible && project) {
+    tl.classList.add('visible');
+    const thoughts = [...(project.thoughts || [])].reverse();
+    if (thoughts.length === 0) {
+      document.getElementById('timelineList').innerHTML = '<p style="color:var(--ink3);font-size:13px;padding:12px 0;">Nog geen activiteit.</p>';
+    } else {
+      document.getElementById('timelineList').innerHTML = thoughts.map(t => `
+        <div class="timeline-item ${t.handoff ? 'has-handoff' : ''}">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">${new Date(t.timestamp).toLocaleString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+          <div class="timeline-content">
+            ${t.energy ? `<div class="timeline-energy">${{high:'🔥',mid:'😐',stuck:'🧱'}[t.energy]||''}</div>` : ''}
+            <div class="timeline-raw">${t.raw}</div>
+            ${t.nextStep ? `<div class="timeline-next">→ ${t.nextStep}</div>` : ''}
+            ${t.handoff ? `<div class="timeline-handoff">${t.handoff}</div>` : ''}
+          </div>
+        </div>`).join('');
+    }
+  } else {
+    tl.classList.remove('visible');
+  }
+}
+
+// ─── AI HANDOFF ───────────────────────────────────────────
+async function generateHandoff() {
+  const raw = document.getElementById('thoughtInput').value.trim();
+  const nextStep = document.getElementById('nextStepInput').value.trim();
+  if (!raw) { document.getElementById('thoughtInput').focus(); return; }
+
+  const project = projects.find(p => p.id === currentProjectId);
+  const resultEl = document.getElementById('aiResult');
+  const groupEl = document.getElementById('aiResultGroup');
+  const energyContext = { high: 'hoge energie', mid: 'gemiddelde energie', stuck: 'vastgelopen' }[currentEnergy] || '';
+  const recentThoughts = (project.thoughts || []).slice(-2).map(t => t.raw).join(' / ');
+
+  groupEl.style.display = 'block';
+  resultEl.className = 'ai-result loading visible';
+  resultEl.textContent = 'Even nadenken...';
+
+  const prompt = `Je bent een slimme assistent voor iemand met een creatief, druk brein die aan meerdere projecten werkt.
+
+Project: "${project.name}"
+${recentThoughts ? `Recente context: "${recentThoughts}"` : ''}
+${energyContext ? `Energie: ${energyContext}` : ''}
+Huidige gedachte: "${raw}"
+${nextStep ? `Volgende stap die ze al bedacht hebben: "${nextStep}"` : ''}
+
+Schrijf een "brain handoff" van maximaal 2 zinnen. Direct, warm, in de tweede persoon. Geen bullets. Vat samen waar ze stonden en geef één scherpe observatie of aanmoediging die past bij hun energieniveau.`;
+
+  if (!apiKey) {
+    resultEl.className = 'ai-result visible';
+    resultEl.textContent = `Je was bezig met ${project.name}: ${raw}. ${nextStep ? `Jouw volgende stap: ${nextStep}.` : 'Pak het op waar je gebleven was.'}`;
+    return;
+  }
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 150,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await response.json();
+    if (data.content && data.content[0]) {
+      resultEl.className = 'ai-result visible';
+      resultEl.textContent = data.content[0].text;
+    } else throw new Error();
+  } catch {
+    resultEl.className = 'ai-result visible';
+    resultEl.textContent = 'Kon geen handoff genereren. Check je API key.';
+  }
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function formatTimeAgo(ts) {
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000);
+  if (m < 2) return 'zojuist';
+  if (m < 60) return `${m}m geleden`;
+  if (h < 24) return `${h}u geleden`;
+  if (d === 1) return 'gisteren';
+  if (d < 7) return `${d}d geleden`;
+  return new Date(ts).toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
+}
+
+// ─── KEYBOARD SHORTCUTS ───────────────────────────────────
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  const isTyping = ['INPUT','TEXTAREA'].includes(tag);
+
+  if (e.key === 'Escape') { closeDetail(); return; }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { if (currentProjectId) saveThought(); return; }
+
+  if (!isTyping && !currentProjectId) {
+    if (e.key === 'n' || e.key === 'N') { toggleAddProject(); return; }
+    const num = parseInt(e.key);
+    if (num >= 1 && num <= 9) {
+      const sorted = [...projects].sort((a,b) => (b.updatedAt||0)-(a.updatedAt||0));
+      const p = sorted[num-1];
+      if (p) openProject(p.id);
+    }
+  }
+});
+
+document.getElementById('newProjectName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addProject();
+});
+
+// ─── START ────────────────────────────────────────────────
+init();
+
+// ─── SERVICE WORKER ───────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Briary PWA ready'))
+      .catch(err => console.log('SW error:', err));
+  });
+}
+</script>
+</body>
+</html>
