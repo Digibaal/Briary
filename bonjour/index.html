@@ -49,6 +49,9 @@
     <g id="i-vink" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M5 12.5 10 17.5 19 7"/>
     </g>
+    <g id="i-pijl-rechts" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.5 5 16 12l-6.5 7"/>
+    </g>
     <g id="i-pijl-links" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
       <path d="M14.5 5 8 12l6.5 7"/>
     </g>
@@ -59,7 +62,7 @@
 </svg>
 
 <header class="app-kop">
-  <button class="merk" type="button" data-ga="start" aria-label="Naar het startscherm">Bonjour<span>!</span></button>
+  <button class="merk" type="button" data-ga="start" aria-label="Naar het startscherm"><span class="ster" aria-hidden="true">✦</span>Bonjour<span>!</span></button>
   <span class="rechts">
     <span class="netstatus" id="netstatus" data-net="online" role="status">Online</span>
   </span>
@@ -70,6 +73,40 @@
   <!-- ===================== Startscherm ===================== -->
   <section class="scherm stapel" id="scherm-start" aria-labelledby="titel-start">
     <div class="kaart">
+      <svg class="hero" viewBox="0 0 340 210" role="img" aria-labelledby="hero-titel">
+        <title id="hero-titel">Illustratie: een spraakbel met geluidsgolven onder een gekleurde boog</title>
+        <defs>
+          <linearGradient id="boog" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#a9ded3"/>
+            <stop offset=".5" stop-color="#c8c1f0"/>
+            <stop offset="1" stop-color="#fbd4a3"/>
+          </linearGradient>
+        </defs>
+        <path d="M34 210V118a136 104 0 0 1 272 0v92z" fill="url(#boog)"/>
+        <circle cx="272" cy="70" r="17" fill="#fdf8f0" opacity=".55"/>
+        <path d="M96 88h148a26 26 0 0 1 26 26v34a26 26 0 0 1-26 26H96a26 26 0 0 1-26-26v-34a26 26 0 0 1 26-26z" fill="#fdf8f0"/>
+        <path d="M104 172h40l-30 32z" fill="#fdf8f0"/>
+        <g fill="#16233f">
+          <rect x="100" y="122" width="7" height="18" rx="3.5"/>
+          <rect x="115" y="112" width="7" height="38" rx="3.5"/>
+          <rect x="130" y="104" width="7" height="54" rx="3.5"/>
+          <rect x="145" y="118" width="7" height="26" rx="3.5"/>
+        </g>
+        <g fill="#b8532f">
+          <rect x="160" y="108" width="7" height="46" rx="3.5"/>
+          <rect x="175" y="120" width="7" height="22" rx="3.5"/>
+          <rect x="190" y="110" width="7" height="42" rx="3.5"/>
+          <rect x="205" y="122" width="7" height="18" rx="3.5"/>
+          <rect x="220" y="114" width="7" height="34" rx="3.5"/>
+          <rect x="235" y="124" width="7" height="14" rx="3.5"/>
+        </g>
+        <g fill="#fdf8f0">
+          <path d="M58 60c1.5 8 3.5 10 11 11.5-7.5 1.5-9.5 3.5-11 11.5-1.5-8-3.5-10-11-11.5 7.5-1.5 9.5-3.5 11-11.5z"/>
+          <path d="M287 128c1.1 6 2.6 7.4 8.1 8.5-5.5 1.1-7 2.5-8.1 8.5-1.1-6-2.6-7.4-8.1-8.5 5.5-1.1 7-2.5 8.1-8.5z"/>
+        </g>
+        <path d="M170 34c1.7 9 4 11.3 12.4 13-8.4 1.7-10.7 4-12.4 13-1.7-9-4-11.3-12.4-13 8.4-1.7 10.7-4 12.4-13z" fill="#b8532f"/>
+      </svg>
+      <p class="kicker">Frans voor onderweg</p>
       <h1 id="titel-start">Bonjour! Klaar voor een beetje Frans?</h1>
       <p class="uitleg">Leer alleen wat je onderweg echt nodig hebt. Acht korte lessen, een zinnenboek en oefeningen — in een paar minuten per keer.</p>
       <div class="knoprij">
@@ -103,6 +140,7 @@
   <!-- ===================== Leren: lessenlijst ===================== -->
   <section class="scherm stapel" id="scherm-leren" aria-labelledby="titel-leren" hidden>
     <div>
+      <p class="kicker">Acht korte lessen</p>
       <h1 id="titel-leren">Leren</h1>
       <p class="uitleg">Acht lessen van drie tot vijf minuten. Op volgorde is handig, maar niet verplicht.</p>
     </div>
@@ -118,7 +156,7 @@
       Alle lessen
     </button>
     <div>
-      <p class="mini" id="les-nummer"></p>
+      <p class="kicker strak" id="les-nummer"></p>
       <h1 id="titel-les"></h1>
       <p class="uitleg" id="les-intro"></p>
     </div>
@@ -134,7 +172,8 @@
   <section class="scherm stapel" id="scherm-oefenen" aria-labelledby="titel-oefenen" hidden>
     <div id="oefen-keuze" class="stapel">
       <div>
-        <h1 id="titel-oefenen">Oefenen</h1>
+        <p class="kicker">Even herhalen</p>
+      <h1 id="titel-oefenen">Oefenen</h1>
         <p class="uitleg">Korte rondes van acht opdrachten. Geen punten, geen levens, geen ranglijst — gewoon herhalen tot het blijft plakken.</p>
       </div>
       <div class="kaart">
@@ -197,6 +236,7 @@
   <!-- ===================== Zinnenboek ===================== -->
   <section class="scherm stapel" id="scherm-zinnenboek" aria-labelledby="titel-zinnenboek" hidden>
     <div>
+      <p class="kicker">Alles opzoekbaar</p>
       <h1 id="titel-zinnenboek">Zinnenboek</h1>
       <p class="uitleg">Alle zinnen bij elkaar. Zoek in het Nederlands of in het Frans.</p>
     </div>
@@ -231,6 +271,7 @@
   <!-- ===================== Favorieten ===================== -->
   <section class="scherm stapel" id="scherm-favorieten" aria-labelledby="titel-favorieten" hidden>
     <div>
+      <p class="kicker">Jouw spiekbriefje</p>
       <h1 id="titel-favorieten">Favorieten</h1>
       <p class="uitleg">Je eigen spiekbriefje. Tik het hartje bij een zin om hem hier te bewaren.</p>
     </div>
@@ -240,6 +281,7 @@
   <!-- ===================== Voortgang en instellingen ===================== -->
   <section class="scherm stapel" id="scherm-voortgang" aria-labelledby="titel-voortgang" hidden>
     <div>
+      <p class="kicker">Hoe ver je bent</p>
       <h1 id="titel-voortgang">Voortgang</h1>
       <p class="uitleg">Alles staat alleen op dit apparaat. De app verzamelt en verstuurt geen gegevens.</p>
     </div>
@@ -319,9 +361,23 @@
   <p class="g-fr" id="groot-fr" lang="fr"></p>
   <p class="g-nl" id="groot-nl"></p>
   <p class="g-ph" id="groot-ph"></p>
+  <svg class="golf" viewBox="0 0 280 34" aria-hidden="true">
+    <rect x="0" y="13" width="5" height="8" rx="2.5"/><rect x="12" y="8" width="5" height="18" rx="2.5"/>
+    <rect x="24" y="3" width="5" height="28" rx="2.5"/><rect x="36" y="11" width="5" height="12" rx="2.5"/>
+    <rect x="48" y="6" width="5" height="22" rx="2.5"/><rect x="60" y="14" width="5" height="6" rx="2.5"/>
+    <rect x="72" y="9" width="5" height="16" rx="2.5"/><rect x="84" y="2" width="5" height="30" rx="2.5"/>
+    <rect x="96" y="10" width="5" height="14" rx="2.5"/><rect x="108" y="5" width="5" height="24" rx="2.5"/>
+    <rect x="120" y="13" width="5" height="8" rx="2.5"/><rect x="132" y="7" width="5" height="20" rx="2.5"/>
+    <rect x="144" y="3" width="5" height="28" rx="2.5"/><rect x="156" y="12" width="5" height="10" rx="2.5"/>
+    <rect x="168" y="8" width="5" height="18" rx="2.5"/><rect x="180" y="14" width="5" height="6" rx="2.5"/>
+    <rect x="192" y="6" width="5" height="22" rx="2.5"/><rect x="204" y="11" width="5" height="12" rx="2.5"/>
+    <rect x="216" y="4" width="5" height="26" rx="2.5"/><rect x="228" y="13" width="5" height="8" rx="2.5"/>
+    <rect x="240" y="9" width="5" height="16" rx="2.5"/><rect x="252" y="12" width="5" height="10" rx="2.5"/>
+    <rect x="264" y="14" width="5" height="6" rx="2.5"/>
+  </svg>
   <div class="g-acties">
-    <button class="icoonknop" type="button" id="groot-spreek">
-      <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-geluid"/></svg> Luister
+    <button class="rondknop" type="button" id="groot-spreek" aria-label="Luister naar de uitspraak">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-geluid"/></svg>
     </button>
     <button class="knop primair" type="button" id="groot-sluit">Sluiten</button>
   </div>

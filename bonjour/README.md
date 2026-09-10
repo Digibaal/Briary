@@ -111,6 +111,21 @@ altijd bij elke zin, en geen enkele oefening heeft geluid nodig.
 * Franse tekst is gemarkeerd met `lang="fr"`, zodat een schermlezer overschakelt.
 * `prefers-reduced-motion` wordt gerespecteerd.
 
+## Vormgeving
+
+Alle kleuren, radiussen en schaduwen staan als custom properties bovenaan
+`css/styles.css`. De achtergrond is één vast vlak (`body::before`) met drie
+zachte kleurvlekken; per scherm wisselen die tinten via
+`body[data-scherm="…"]`, wat `app.js` bij elke schermwissel zet. Wil je de
+sfeer aanpassen, dan zijn dat de enige twee plekken die je nodig hebt.
+
+Typografie: systeemfont in zwaar gewicht met strakke letterafstand voor de
+koppen, en een serif-cursief (`--font-serif`) voor de kleine accentregels, het
+woordmerk en de beeldvullende weergave. Geen webfonts, dus niets om te laden.
+
+Backdrop-blur zit alleen op de kop, de navigatiebalk en losse kaarten — niet op
+de zinkaarten, omdat daar lange lijsten van komen.
+
 ## Inhoud aanpassen
 
 Alle tekst staat in `js/data.js`:

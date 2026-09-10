@@ -360,6 +360,7 @@
     opties = opties || {};
     if (SCHERMEN.indexOf(naam) === -1) naam = 'start';
     huidigScherm = naam;
+    document.body.dataset.scherm = naam;
 
     SCHERMEN.forEach(function (s) {
       var vak = document.getElementById('scherm-' + s);
@@ -461,23 +462,18 @@
     var klaar = state.voltooid.indexOf(les.id) !== -1;
     knop.setAttribute('data-klaar', klaar ? 'ja' : 'nee');
 
-    knop.appendChild(el('span', 'nr', String(les.id)));
+    var tekst = el('span', 'tekst');
+    tekst.appendChild(el('span', 'nr', 'Les ' + les.id));
+    tekst.appendChild(el('span', 'titel', les.title));
+    tekst.appendChild(el('span', 'sub', les.subtitle));
+    knop.appendChild(tekst);
 
-    var midden = el('span');
-    midden.appendChild(el('span', 'titel', les.title));
-    midden.appendChild(document.createElement('br'));
-    midden.appendChild(el('span', 'sub', les.subtitle));
-    knop.appendChild(midden);
+    var merkje = el('span', 'merkje');
+    merkje.appendChild(icoon(klaar ? 'i-vink' : 'i-pijl-rechts'));
+    knop.appendChild(merkje);
 
-    if (klaar) {
-      var vink = el('span', 'vink');
-      vink.appendChild(icoon('i-vink'));
-      knop.appendChild(vink);
-      knop.setAttribute('aria-label', 'Les ' + les.id + ': ' + les.title + ' — voltooid');
-    } else {
-      knop.setAttribute('aria-label', 'Les ' + les.id + ': ' + les.title);
-    }
-
+    knop.setAttribute('aria-label',
+      'Les ' + les.id + ': ' + les.title + (klaar ? ' — voltooid' : ''));
     knop.addEventListener('click', function () { openLes(les.id); });
     return knop;
   }
