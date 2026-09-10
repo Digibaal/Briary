@@ -76,9 +76,16 @@ Zet de vliegtuigmodus aan en open de geïnstalleerde app vanaf het beginscherm.
 
 **Na een wijziging in de code**
 
-Verhoog de versie in `sw.js` (`var CACHE = 'bonjour-v1';` → `-v2`) en herlaad
-twee keer, of gebruik *Update on reload* in de ontwikkelaarstools. Anders
-blijft de oude versie uit de cache komen.
+De service worker ververst zichzelf: bij het openen wordt `sw.js` opnieuw
+opgehaald, een nieuwe versie neemt het meteen over en de pagina herlaadt één
+keer automatisch. Verhoog wel `VERSIE` in `sw.js` én `APP_VERSIE` in
+`js/app.js` (die twee horen gelijk te zijn) — dan wordt de oude cache
+opgeruimd in plaats van bijgewerkt.
+
+Zie je op je telefoon toch de oude versie: sluit de app helemaal af (niet
+alleen naar de achtergrond) en open hem opnieuw. Blijft het hangen, haal hem
+dan van je beginscherm en voeg hem opnieuw toe. Bij *Voortgang → Over deze
+app* staat welk versienummer er draait.
 
 ## Wat er lokaal wordt bewaard
 

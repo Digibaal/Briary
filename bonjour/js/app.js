@@ -12,6 +12,10 @@
      1. Opslag
      =========================================================== */
 
+  /* Houd dit gelijk aan VERSIE in sw.js. Wordt getoond bij Voortgang,
+     zodat je kunt zien welke versie er op je telefoon draait. */
+  var APP_VERSIE = 2;
+
   var SLEUTEL = 'bonjour.v1';
 
   var STANDAARD = {
@@ -658,6 +662,9 @@
   function tekenVoortgang() {
     werkStatsBij();
 
+    var versie = $('#app-versie');
+    if (versie) versie.textContent = 'Appversie ' + APP_VERSIE + '.';
+
     var lijst = $('#voortgang-lessen');
     lijst.textContent = '';
     LESSONS.forEach(function (les) {
@@ -1195,9 +1202,34 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function () {
-        /* Bijvoorbeeld bij openen via file:// — de app werkt dan nog steeds,
-           alleen zonder offline-cache. */
+      /* updateViaCache: 'none' — sw.js zelf nooit uit de browsercache halen,
+         anders blijft een oude versie eindeloos hangen. */
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+        .then(function (reg) {
+          reg.update();
+          /* Staat er een nieuwe versie klaar? Laat die het meteen overnemen. */
+          reg.addEventListener('updatefound', function () {
+            var nieuweSw = reg.installing;
+            if (!nieuweSw) return;
+            nieuweSw.addEventListener('statechange', function () {
+              if (nieuweSw.state === 'installed' && navigator.serviceWorker.controller) {
+                nieuweSw.postMessage('neem-over');
+              }
+            });
+          });
+        })
+        .catch(function () {
+          /* Bijvoorbeeld bij openen via file:// — de app werkt dan nog steeds,
+             alleen zonder offline-cache. */
+        });
+
+      /* Neemt een nieuwe service worker het over, dan één keer herladen
+         zodat je de nieuwe versie meteen ziet. */
+      var herladen = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (herladen) return;
+        herladen = true;
+        window.location.reload();
       });
     });
   }

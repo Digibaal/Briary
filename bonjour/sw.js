@@ -2,13 +2,22 @@
    Bonjour! — Frans voor onderweg
    sw.js — service worker voor volledig offline gebruik
 
-   Strategie: alle bestanden worden bij de installatie in de cache
-   gezet (precache). Daarna wordt alles uit de cache geserveerd.
-   Er wordt nooit een externe host benaderd — de app heeft geen
+   Strategie: bij de installatie gaan alle bestanden in de cache.
+   Daarna wordt alles uit de cache geserveerd (dus meteen, ook
+   zonder bereik) en tegelijk op de achtergrond ververst. Een
+   wijziging is daardoor bij het eerstvolgende bezoek binnen en
+   staat een bezoek later op het scherm — zonder dat je hier iets
+   voor hoeft te doen.
+
+   Er wordt nooit een externe host benaderd; de app heeft geen
    enkele afhankelijkheid buiten deze map.
    ============================================================= */
 
-var CACHE = 'bonjour-v1';
+/* Hoog dit nummer op bij een wijziging: dan wordt de hele cache
+   vervangen in plaats van bijgewerkt. Houd het gelijk aan
+   APP_VERSIE in js/app.js. */
+var VERSIE = 2;
+var CACHE = 'bonjour-v' + VERSIE;
 
 /* Relatieve paden, zodat de app in elke submap kan draaien. */
 var BESTANDEN = [
@@ -26,7 +35,13 @@ var BESTANDEN = [
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE)
-      .then(function (cache) { return cache.addAll(BESTANDEN); })
+      /* reload: haal ze bij de installatie gegarandeerd vers op,
+         niet uit de gewone browsercache. */
+      .then(function (cache) {
+        return cache.addAll(BESTANDEN.map(function (pad) {
+          return new Request(pad, { cache: 'reload' });
+        }));
+      })
       .then(function () { return self.skipWaiting(); })
   );
 });
@@ -51,21 +66,34 @@ self.addEventListener('fetch', function (e) {
   if (new URL(verzoek.url).origin !== self.location.origin) return;
 
   e.respondWith(
-    caches.match(verzoek, { ignoreSearch: true }).then(function (uitCache) {
-      if (uitCache) return uitCache;
+    caches.open(CACHE).then(function (cache) {
+      return cache.match(verzoek, { ignoreSearch: true }).then(function (uitCache) {
 
-      return fetch(verzoek).then(function (antwoord) {
-        /* Nieuw opgehaalde bestanden meteen bewaren voor de volgende keer. */
-        if (antwoord && antwoord.status === 200 && antwoord.type === 'basic') {
-          var kopie = antwoord.clone();
-          caches.open(CACHE).then(function (cache) { cache.put(verzoek, kopie); });
-        }
-        return antwoord;
-      }).catch(function () {
-        /* Offline en niet in de cache: voor paginaverzoeken terug naar de app. */
-        if (verzoek.mode === 'navigate') return caches.match('./index.html');
-        return new Response('', { status: 504, statusText: 'Offline' });
+        /* Op de achtergrond verversen. Mislukt dit (offline), dan
+           gebeurt er niets: de cache blijft gewoon staan. */
+        var vers = fetch(verzoek).then(function (antwoord) {
+          if (antwoord && antwoord.status === 200 && antwoord.type === 'basic') {
+            cache.put(verzoek, antwoord.clone());
+          }
+          return antwoord;
+        }).catch(function () {
+          return null;
+        });
+
+        if (uitCache) return uitCache;
+
+        return vers.then(function (antwoord) {
+          if (antwoord) return antwoord;
+          /* Offline en niet in de cache: paginaverzoeken terug naar de app. */
+          if (verzoek.mode === 'navigate') return caches.match('./index.html');
+          return new Response('', { status: 504, statusText: 'Offline' });
+        });
       });
     })
   );
+});
+
+/* De pagina kan vragen om meteen over te schakelen na een update. */
+self.addEventListener('message', function (e) {
+  if (e.data === 'neem-over') self.skipWaiting();
 });
