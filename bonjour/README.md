@@ -19,6 +19,7 @@ bonjour/
 │   └── styles.css          volledige vormgeving, mobiel als uitgangspunt
 ├── js/
 │   ├── data.js             alle cursusinhoud: zinnen, lessen, woorden, getallen
+│   ├── illustraties.js     de negen taferelen, als inline SVG opgebouwd
 │   └── app.js              schermen, opslag, oefeningen, uitspraak
 └── icons/
     ├── icon-192.png        installatie-icoon
@@ -121,17 +122,32 @@ altijd bij elke zin, en geen enkele oefening heeft geluid nodig.
 ## Vormgeving
 
 Alle kleuren, radiussen en schaduwen staan als custom properties bovenaan
-`css/styles.css`. De achtergrond is één vast vlak (`body::before`) met drie
-zachte kleurvlekken; per scherm wisselen die tinten via
-`body[data-scherm="…"]`, wat `app.js` bij elke schermwissel zet. Wil je de
-sfeer aanpassen, dan zijn dat de enige twee plekken die je nodig hebt.
+`css/styles.css`. Elk scherm heeft een eigen kleurverloop: vol van boven,
+uitdovend naar crème onderaan zodat lange lijsten leesbaar blijven. Welke twee
+kleuren dat zijn, staat in het blok `body[data-scherm="…"]`; `app.js` zet dat
+attribuut bij elke schermwissel. Wil je de sfeer aanpassen, dan zijn dat de
+enige twee plekken die je nodig hebt.
 
-Typografie: systeemfont in zwaar gewicht met strakke letterafstand voor de
-koppen, en een serif-cursief (`--font-serif`) voor de kleine accentregels, het
-woordmerk en de beeldvullende weergave. Geen webfonts, dus niets om te laden.
+Typografie is bewust kaal: alleen dikke schreefloze koppen met strakke
+letterafstand, geen cursief en geen webfonts. Kleine labels (LES 3) zijn vet
+en in kapitalen.
 
-Backdrop-blur zit alleen op de kop, de navigatiebalk en losse kaarten — niet op
-de zinkaarten, omdat daar lange lijsten van komen.
+Tekst die rechtstreeks op een kleurverloop staat gebruikt `--op-verloop`, een
+donkerdere tint dan de tekst op witte kaarten. Dat is geen smaak maar
+noodzaak: op lila of perzik zakt de zachtere kleur onder de contrastnorm.
+
+### Illustraties
+
+De negen taferelen in `js/illustraties.js` worden opgebouwd uit bouwstenen:
+een boog als achtergrond, een figuur (`figuur()`, met kapsel, huidtint en
+truikleur als opties) en per les een eigen rekwisiet. Een kleur of een kapsel
+pas je op één plek aan en het werkt overal door. Alles is inline SVG, dus
+scherp op elk scherm en beschikbaar zonder internet.
+
+Een tafereel toevoegen: zet een functie in het object `scenes` met het
+lesnummer als sleutel, en gebruik `boog()`, `figuur()`, `bel()` en `ster()`
+als bouwstenen. `svg()` maakt er een compleet plaatje van met een beschrijving
+voor de schermlezer — die beschrijving is verplicht.
 
 ## Inhoud aanpassen
 

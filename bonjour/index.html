@@ -73,40 +73,7 @@
   <!-- ===================== Startscherm ===================== -->
   <section class="scherm stapel" id="scherm-start" aria-labelledby="titel-start">
     <div class="kaart">
-      <svg class="hero" viewBox="0 0 340 210" role="img" aria-labelledby="hero-titel">
-        <title id="hero-titel">Illustratie: een spraakbel met geluidsgolven onder een gekleurde boog</title>
-        <defs>
-          <linearGradient id="boog" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#a9ded3"/>
-            <stop offset=".5" stop-color="#c8c1f0"/>
-            <stop offset="1" stop-color="#fbd4a3"/>
-          </linearGradient>
-        </defs>
-        <path d="M34 210V118a136 104 0 0 1 272 0v92z" fill="url(#boog)"/>
-        <circle cx="272" cy="70" r="17" fill="#fdf8f0" opacity=".55"/>
-        <path d="M96 88h148a26 26 0 0 1 26 26v34a26 26 0 0 1-26 26H96a26 26 0 0 1-26-26v-34a26 26 0 0 1 26-26z" fill="#fdf8f0"/>
-        <path d="M104 172h40l-30 32z" fill="#fdf8f0"/>
-        <g fill="#16233f">
-          <rect x="100" y="122" width="7" height="18" rx="3.5"/>
-          <rect x="115" y="112" width="7" height="38" rx="3.5"/>
-          <rect x="130" y="104" width="7" height="54" rx="3.5"/>
-          <rect x="145" y="118" width="7" height="26" rx="3.5"/>
-        </g>
-        <g fill="#b8532f">
-          <rect x="160" y="108" width="7" height="46" rx="3.5"/>
-          <rect x="175" y="120" width="7" height="22" rx="3.5"/>
-          <rect x="190" y="110" width="7" height="42" rx="3.5"/>
-          <rect x="205" y="122" width="7" height="18" rx="3.5"/>
-          <rect x="220" y="114" width="7" height="34" rx="3.5"/>
-          <rect x="235" y="124" width="7" height="14" rx="3.5"/>
-        </g>
-        <g fill="#fdf8f0">
-          <path d="M58 60c1.5 8 3.5 10 11 11.5-7.5 1.5-9.5 3.5-11 11.5-1.5-8-3.5-10-11-11.5 7.5-1.5 9.5-3.5 11-11.5z"/>
-          <path d="M287 128c1.1 6 2.6 7.4 8.1 8.5-5.5 1.1-7 2.5-8.1 8.5-1.1-6-2.6-7.4-8.1-8.5 5.5-1.1 7-2.5 8.1-8.5z"/>
-        </g>
-        <path d="M170 34c1.7 9 4 11.3 12.4 13-8.4 1.7-10.7 4-12.4 13-1.7-9-4-11.3-12.4-13 8.4-1.7 10.7-4 12.4-13z" fill="#b8532f"/>
-      </svg>
-      <p class="kicker">Frans voor onderweg</p>
+      <div class="tafereelvak" id="hero"></div>
       <h1 id="titel-start">Bonjour! Klaar voor een beetje Frans?</h1>
       <p class="uitleg">Leer alleen wat je onderweg echt nodig hebt. Acht korte lessen, een zinnenboek en oefeningen — in een paar minuten per keer.</p>
       <div class="knoprij">
@@ -139,13 +106,13 @@
 
   <!-- ===================== Leren: lessenlijst ===================== -->
   <section class="scherm stapel" id="scherm-leren" aria-labelledby="titel-leren" hidden>
-    <div>
-      <p class="kicker">Acht korte lessen</p>
+    <div class="schermkop">
       <h1 id="titel-leren">Leren</h1>
       <p class="uitleg">Acht lessen van drie tot vijf minuten. Op volgorde is handig, maar niet verplicht.</p>
     </div>
     <div class="balk"><i id="leren-balk" style="width:0%"></i></div>
     <p class="mini" id="leren-voortgangstekst">0 van 8 lessen voltooid</p>
+    <div id="verder-vak"></div>
     <ul class="leslijst" id="leslijst"></ul>
   </section>
 
@@ -155,10 +122,11 @@
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><use href="#i-pijl-links"/></svg>
       Alle lessen
     </button>
-    <div>
-      <p class="kicker strak" id="les-nummer"></p>
+    <div class="kaart">
+      <div class="tafereelvak" id="les-tafereel"></div>
+      <p class="label" id="les-nummer"></p>
       <h1 id="titel-les"></h1>
-      <p class="uitleg" id="les-intro"></p>
+      <p class="uitleg" id="les-intro" style="margin-bottom:0"></p>
     </div>
     <div id="les-zinnen"></div>
     <div class="knoprij">
@@ -171,8 +139,7 @@
   <!-- ===================== Oefenen ===================== -->
   <section class="scherm stapel" id="scherm-oefenen" aria-labelledby="titel-oefenen" hidden>
     <div id="oefen-keuze" class="stapel">
-      <div>
-        <p class="kicker">Even herhalen</p>
+      <div class="schermkop">
       <h1 id="titel-oefenen">Oefenen</h1>
         <p class="uitleg">Korte rondes van acht opdrachten. Geen punten, geen levens, geen ranglijst — gewoon herhalen tot het blijft plakken.</p>
       </div>
@@ -235,8 +202,7 @@
 
   <!-- ===================== Zinnenboek ===================== -->
   <section class="scherm stapel" id="scherm-zinnenboek" aria-labelledby="titel-zinnenboek" hidden>
-    <div>
-      <p class="kicker">Alles opzoekbaar</p>
+    <div class="schermkop">
       <h1 id="titel-zinnenboek">Zinnenboek</h1>
       <p class="uitleg">Alle zinnen bij elkaar. Zoek in het Nederlands of in het Frans.</p>
     </div>
@@ -270,8 +236,7 @@
 
   <!-- ===================== Favorieten ===================== -->
   <section class="scherm stapel" id="scherm-favorieten" aria-labelledby="titel-favorieten" hidden>
-    <div>
-      <p class="kicker">Jouw spiekbriefje</p>
+    <div class="schermkop">
       <h1 id="titel-favorieten">Favorieten</h1>
       <p class="uitleg">Je eigen spiekbriefje. Tik het hartje bij een zin om hem hier te bewaren.</p>
     </div>
@@ -280,8 +245,7 @@
 
   <!-- ===================== Voortgang en instellingen ===================== -->
   <section class="scherm stapel" id="scherm-voortgang" aria-labelledby="titel-voortgang" hidden>
-    <div>
-      <p class="kicker">Hoe ver je bent</p>
+    <div class="schermkop">
       <h1 id="titel-voortgang">Voortgang</h1>
       <p class="uitleg">Alles staat alleen op dit apparaat. De app verzamelt en verstuurt geen gegevens.</p>
     </div>
@@ -409,6 +373,7 @@
 </nav>
 
 <script src="js/data.js"></script>
+<script src="js/illustraties.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

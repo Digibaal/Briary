@@ -16,7 +16,7 @@
 /* Hoog dit nummer op bij een wijziging: dan wordt de hele cache
    vervangen in plaats van bijgewerkt. Houd het gelijk aan
    APP_VERSIE in js/app.js. */
-var VERSIE = 2;
+var VERSIE = 3;
 var CACHE = 'bonjour-v' + VERSIE;
 
 /* Relatieve paden, zodat de app in elke submap kan draaien. */
@@ -26,6 +26,7 @@ var BESTANDEN = [
   './manifest.json',
   './css/styles.css',
   './js/data.js',
+  './js/illustraties.js',
   './js/app.js',
   './icons/icon-192.png',
   './icons/icon-512.png',

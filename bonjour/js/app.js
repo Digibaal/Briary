@@ -14,7 +14,7 @@
 
   /* Houd dit gelijk aan VERSIE in sw.js. Wordt getoond bij Voortgang,
      zodat je kunt zien welke versie er op je telefoon draait. */
-  var APP_VERSIE = 2;
+  var APP_VERSIE = 3;
 
   var SLEUTEL = 'bonjour.v1';
 
@@ -482,7 +482,41 @@
     return knop;
   }
 
+  /* Uitgelichte kaart boven de lessenlijst: de les waar je gebleven was,
+     of les 1 als je nog moet beginnen. */
+  function tekenVerder() {
+    var vak = $('#verder-vak');
+    vak.textContent = '';
+
+    var volgende = LESSONS.filter(function (l) { return state.voltooid.indexOf(l.id) === -1; })[0];
+    var les = volgende || LESSONS[(state.laatsteLes || 1) - 1];
+    if (!les) return;
+
+    var knop = el('button', 'verder');
+    knop.type = 'button';
+
+    var plaatje = el('span', 'plaatje');
+    plaatje.innerHTML = ILLUSTRATIES.les(les.id);
+    knop.appendChild(plaatje);
+
+    var tekst = el('span', 'tekst');
+    tekst.appendChild(el('span', 'titel', les.title));
+    tekst.appendChild(el('span', 'sub',
+      (state.voltooid.indexOf(les.id) === -1 && state.laatsteLes === les.id
+        ? 'Verder waar je gebleven was' : 'Les ' + les.id + ' • ' + les.subtitle)));
+    knop.appendChild(tekst);
+
+    var rond = el('span', 'rond');
+    rond.appendChild(icoon('i-pijl-rechts'));
+    knop.appendChild(rond);
+
+    knop.setAttribute('aria-label', 'Ga verder met les ' + les.id + ': ' + les.title);
+    knop.addEventListener('click', function () { openLes(les.id); });
+    vak.appendChild(knop);
+  }
+
   function tekenLessen() {
+    tekenVerder();
     var lijst = $('#leslijst');
     lijst.textContent = '';
     LESSONS.forEach(function (les) {
@@ -504,7 +538,8 @@
     state.laatsteLes = id;
     bewaren();
 
-    $('#les-nummer').textContent = 'Les ' + les.id + ' van ' + LESSONS.length + ' • ' + les.subtitle;
+    $('#les-tafereel').innerHTML = ILLUSTRATIES.les(les.id);
+    $('#les-nummer').textContent = 'Les ' + les.id + ' van ' + LESSONS.length;
     $('#titel-les').textContent = les.title;
     $('#les-intro').textContent = les.intro;
 
@@ -566,7 +601,8 @@
       knop.setAttribute('aria-pressed', cat.id === actieveCategorie ? 'true' : 'false');
       knop.addEventListener('click', function () {
         actieveCategorie = cat.id;
-        tekenCategorieFilters();
+        $('#hero').innerHTML = ILLUSTRATIES.hero();
+  tekenCategorieFilters();
         tekenZinnenboek();
       });
       vak.appendChild(knop);
@@ -1238,6 +1274,7 @@
      17. Opstarten
      =========================================================== */
 
+  $('#hero').innerHTML = ILLUSTRATIES.hero();
   tekenCategorieFilters();
   tekenWoordenlijst();
   tekenZinnenboek();
