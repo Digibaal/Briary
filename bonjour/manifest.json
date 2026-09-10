@@ -1,0 +1,19 @@
+{
+  "name": "Bonjour! — Frans voor onderweg",
+  "short_name": "Bonjour!",
+  "description": "Korte basiscursus Frans voor Nederlandstalige reizigers. Werkt volledig offline.",
+  "lang": "nl",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbf6ed",
+  "theme_color": "#fbf6ed",
+  "categories": ["education", "travel"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

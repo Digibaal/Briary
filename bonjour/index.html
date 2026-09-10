@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bonjour! — Frans voor onderweg</title>
+<meta name="description" content="Korte basiscursus Frans voor Nederlandstalige reizigers. Werkt volledig offline.">
+<meta name="theme-color" content="#fbf6ed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bonjour!">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#inhoud">Naar de inhoud</a>
+
+<!-- Lijniconen: één keer gedefinieerd, overal hergebruikt via <use>. -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <g id="i-leren" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2v13a2 2 0 0 0-2-1.6H5.5A1.5 1.5 0 0 1 4 15.9z"/>
+      <path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H14a2 2 0 0 0-2 2v13a2 2 0 0 1 2-1.6h4.5a1.5 1.5 0 0 0 1.5-1.5z"/>
+    </g>
+    <g id="i-oefenen" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 12a7.5 7.5 0 0 1 12.9-5.2l2.1 2.1"/><path d="M19.5 4.5V9h-4.5"/>
+      <path d="M19.5 12a7.5 7.5 0 0 1-12.9 5.2l-2.1-2.1"/><path d="M4.5 19.5V15H9"/>
+    </g>
+    <g id="i-boek" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 6.5h3"/><path d="M10.5 6.5h9"/>
+      <path d="M4.5 12h3"/><path d="M10.5 12h9"/>
+      <path d="M4.5 17.5h3"/><path d="M10.5 17.5h9"/>
+    </g>
+    <g id="i-hart" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19.5S4.5 15 4.5 9.6A3.9 3.9 0 0 1 12 7.7a3.9 3.9 0 0 1 7.5 1.9c0 5.4-7.5 9.9-7.5 9.9z"/>
+    </g>
+    <g id="i-grafiek" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5h16"/><path d="M7 16V10"/><path d="M12 16V5.5"/><path d="M17 16v-4"/>
+    </g>
+    <g id="i-vergroot" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 4.5H4.5V9"/><path d="M15 4.5h4.5V9"/><path d="M15 19.5h4.5V15"/><path d="M9 19.5H4.5V15"/>
+    </g>
+    <g id="i-geluid" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 9.5h3l4-3.5v12l-4-3.5H5z"/><path d="M15.5 9a4 4 0 0 1 0 6"/>
+    </g>
+    <g id="i-vink" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12.5 10 17.5 19 7"/>
+    </g>
+    <g id="i-pijl-links" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.5 5 8 12l6.5 7"/>
+    </g>
+    <g id="i-kruis" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 6 18 18M18 6 6 18"/>
+    </g>
+  </defs>
+</svg>
+
+<header class="app-kop">
+  <button class="merk" type="button" data-ga="start" aria-label="Naar het startscherm">Bonjour<span>!</span></button>
+  <span class="rechts">
+    <span class="netstatus" id="netstatus" data-net="online" role="status">Online</span>
+  </span>
+</header>
+
+<main id="inhoud" tabindex="-1">
+
+  <!-- ===================== Startscherm ===================== -->
+  <section class="scherm stapel" id="scherm-start" aria-labelledby="titel-start">
+    <div class="kaart">
+      <h1 id="titel-start">Bonjour! Klaar voor een beetje Frans?</h1>
+      <p class="uitleg">Leer alleen wat je onderweg echt nodig hebt. Acht korte lessen, een zinnenboek en oefeningen — in een paar minuten per keer.</p>
+      <div class="knoprij">
+        <button class="knop primair" type="button" data-actie="start-cursus">Start de basiscursus</button>
+        <button class="knop secundair" type="button" data-ga="zinnenboek">Open het zinnenboek</button>
+      </div>
+    </div>
+
+    <div class="kaart">
+      <h2>Je voortgang</h2>
+      <p id="start-voortgangstekst" class="uitleg">0 van 8 lessen voltooid</p>
+      <div class="balk"><i id="start-balk" style="width:0%"></i></div>
+      <p class="mini" id="start-laatste" style="margin-top:10px"></p>
+    </div>
+
+    <div class="kaart" id="niveau-kaart">
+      <h2>Waar begin je?</h2>
+      <p class="uitleg">Dit bepaalt alleen hoeveel uitleg je ziet. Je kunt het altijd wijzigen bij Voortgang.</p>
+      <div class="chips" role="group" aria-label="Beginniveau">
+        <button type="button" data-niveau="nul" aria-pressed="false">Ik begin vanaf nul</button>
+        <button type="button" data-niveau="iets" aria-pressed="false">Ik ken al enkele Franse woorden</button>
+      </div>
+    </div>
+
+    <div class="kaart rustig">
+      <h2>Werkt offline</h2>
+      <p class="uitleg" style="margin:0">Alles staat op je telefoon. Geen account, geen internet, geen dataverbruik onderweg. Voeg de app toe aan je beginscherm en hij opent ook zonder bereik.</p>
+    </div>
+  </section>
+
+  <!-- ===================== Leren: lessenlijst ===================== -->
+  <section class="scherm stapel" id="scherm-leren" aria-labelledby="titel-leren" hidden>
+    <div>
+      <h1 id="titel-leren">Leren</h1>
+      <p class="uitleg">Acht lessen van drie tot vijf minuten. Op volgorde is handig, maar niet verplicht.</p>
+    </div>
+    <div class="balk"><i id="leren-balk" style="width:0%"></i></div>
+    <p class="mini" id="leren-voortgangstekst">0 van 8 lessen voltooid</p>
+    <ul class="leslijst" id="leslijst"></ul>
+  </section>
+
+  <!-- ===================== Leren: één les ===================== -->
+  <section class="scherm stapel" id="scherm-les" aria-labelledby="titel-les" hidden>
+    <button class="terug" type="button" data-ga="leren">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><use href="#i-pijl-links"/></svg>
+      Alle lessen
+    </button>
+    <div>
+      <p class="mini" id="les-nummer"></p>
+      <h1 id="titel-les"></h1>
+      <p class="uitleg" id="les-intro"></p>
+    </div>
+    <div id="les-zinnen"></div>
+    <div class="knoprij">
+      <button class="knop primair" type="button" id="les-klaar">Les afronden</button>
+      <button class="knop secundair" type="button" id="les-oefen">Oefen deze les</button>
+    </div>
+    <p class="mini" id="les-volgende"></p>
+  </section>
+
+  <!-- ===================== Oefenen ===================== -->
+  <section class="scherm stapel" id="scherm-oefenen" aria-labelledby="titel-oefenen" hidden>
+    <div id="oefen-keuze" class="stapel">
+      <div>
+        <h1 id="titel-oefenen">Oefenen</h1>
+        <p class="uitleg">Korte rondes van acht opdrachten. Geen punten, geen levens, geen ranglijst — gewoon herhalen tot het blijft plakken.</p>
+      </div>
+      <div class="kaart">
+        <h2>Kies je ronde</h2>
+        <div class="veld">
+          <label for="oefen-bron">Waarover wil je oefenen?</label>
+          <select id="oefen-bron"></select>
+        </div>
+        <div class="veld">
+          <label for="oefen-soort">Soort oefening</label>
+          <select id="oefen-soort">
+            <option value="mix">Gemengd (aanrader)</option>
+            <option value="nl">Kies de Nederlandse vertaling</option>
+            <option value="fr">Kies de Franse zin</option>
+            <option value="aanvullen">Vul het sleutelwoord aan</option>
+            <option value="volgorde">Zet de zin op volgorde</option>
+            <option value="situatie">Mini-situaties</option>
+            <option value="flash">Flashcards</option>
+            <option value="hardop">Hardop nazeggen</option>
+          </select>
+        </div>
+        <button class="knop primair breed" type="button" id="oefen-start" style="margin-top:14px">Begin de ronde</button>
+      </div>
+      <div class="kaart rustig" id="lastig-kaart" hidden>
+        <h2>Zinnen die je lastig vindt</h2>
+        <p class="uitleg mini">Deze kwamen er bij het oefenen niet meteen uit.</p>
+        <ul id="lastig-lijst" class="mini" style="margin:0;padding-left:18px"></ul>
+        <button class="knop secundair breed" type="button" id="oefen-lastig" style="margin-top:12px">Oefen alleen deze</button>
+      </div>
+    </div>
+
+    <div id="oefen-ronde" hidden>
+      <div class="oefen-kop">
+        <button class="terug" type="button" id="oefen-stop" style="margin:0">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><use href="#i-kruis"/></svg>
+          <span class="sr-only">Stop met oefenen</span>
+        </button>
+        <div class="balk"><i id="oefen-balk" style="width:0%"></i></div>
+        <span class="teller" id="oefen-teller">1 / 8</span>
+      </div>
+      <div class="kaart" id="oefen-vak"></div>
+      <p class="feedback" id="oefen-feedback" role="status"></p>
+      <div class="knoprij" style="margin-top:14px">
+        <button class="knop primair" type="button" id="oefen-volgende" hidden>Volgende</button>
+      </div>
+    </div>
+
+    <div id="oefen-klaar" class="stapel" hidden>
+      <div class="kaart">
+        <h1>Ronde afgerond</h1>
+        <p class="uitleg" id="oefen-uitslag"></p>
+        <div class="knoprij">
+          <button class="knop primair" type="button" id="oefen-nogeens">Nog een ronde</button>
+          <button class="knop omlijnd" type="button" id="oefen-terug">Terug naar het overzicht</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Zinnenboek ===================== -->
+  <section class="scherm stapel" id="scherm-zinnenboek" aria-labelledby="titel-zinnenboek" hidden>
+    <div>
+      <h1 id="titel-zinnenboek">Zinnenboek</h1>
+      <p class="uitleg">Alle zinnen bij elkaar. Zoek in het Nederlands of in het Frans.</p>
+    </div>
+    <div class="veld">
+      <label for="zoek">Zoeken</label>
+      <input type="search" id="zoek" placeholder="bijvoorbeeld: toilet, chien, betalen" autocomplete="off" enterkeyhint="search">
+    </div>
+    <div class="chips" id="cat-filters" role="group" aria-label="Filter op categorie"></div>
+    <p class="mini" id="zoek-telling" role="status"></p>
+    <div id="zinnenboek-lijst"></div>
+
+    <section aria-labelledby="titel-recent" id="recent-blok" hidden>
+      <h2 id="titel-recent">Recent bekeken</h2>
+      <div id="recent-lijst"></div>
+    </section>
+
+    <details class="uitklap">
+      <summary>Snelle woordenlijst</summary>
+      <table class="woordtabel">
+        <caption class="sr-only">Losse woorden Nederlands – Frans</caption>
+        <thead><tr><th scope="col">Nederlands</th><th scope="col">Frans</th><th scope="col">Uitspraak</th></tr></thead>
+        <tbody id="woordenlijst"></tbody>
+      </table>
+    </details>
+
+    <details class="uitklap">
+      <summary>Getallen</summary>
+      <div class="getallen" id="getallenlijst" style="margin:8px 0 16px"></div>
+    </details>
+  </section>
+
+  <!-- ===================== Favorieten ===================== -->
+  <section class="scherm stapel" id="scherm-favorieten" aria-labelledby="titel-favorieten" hidden>
+    <div>
+      <h1 id="titel-favorieten">Favorieten</h1>
+      <p class="uitleg">Je eigen spiekbriefje. Tik het hartje bij een zin om hem hier te bewaren.</p>
+    </div>
+    <div id="favorieten-lijst"></div>
+  </section>
+
+  <!-- ===================== Voortgang en instellingen ===================== -->
+  <section class="scherm stapel" id="scherm-voortgang" aria-labelledby="titel-voortgang" hidden>
+    <div>
+      <h1 id="titel-voortgang">Voortgang</h1>
+      <p class="uitleg">Alles staat alleen op dit apparaat. De app verzamelt en verstuurt geen gegevens.</p>
+    </div>
+
+    <div class="telkaarten">
+      <div class="telkaart"><b id="stat-lessen">0/8</b><span>lessen voltooid</span></div>
+      <div class="telkaart"><b id="stat-favorieten">0</b><span>favorieten</span></div>
+      <div class="telkaart"><b id="stat-score">—</b><span>gemiddeld goed</span></div>
+      <div class="telkaart"><b id="stat-lastig">0</b><span>lastige zinnen</span></div>
+    </div>
+
+    <div class="kaart">
+      <h2>Lessen</h2>
+      <ul id="voortgang-lessen" class="leslijst" style="margin-top:6px"></ul>
+    </div>
+
+    <div class="kaart">
+      <h2>Instellingen</h2>
+      <p class="uitleg mini">Deze woorden worden meteen in de lessen en het zinnenboek ingevuld.</p>
+      <div class="veld">
+        <label for="set-naam">Je naam</label>
+        <input type="text" id="set-naam" autocomplete="given-name">
+      </div>
+      <div class="veld">
+        <label for="set-hond">Naam van je hond</label>
+        <input type="text" id="set-hond" autocomplete="off">
+      </div>
+      <div class="veld">
+        <label for="set-landnl">Land (Nederlands)</label>
+        <input type="text" id="set-landnl" autocomplete="off">
+      </div>
+      <div class="veld">
+        <label for="set-landfr">Land (Frans, zoals je het zegt)</label>
+        <input type="text" id="set-landfr" autocomplete="off">
+        <p class="mini" style="margin:6px 0 0">Bijvoorbeeld: des Pays-Bas, de Belgique, d’Allemagne.</p>
+      </div>
+      <div class="veld">
+        <label for="set-vorm">Je spreekt over jezelf als</label>
+        <select id="set-vorm">
+          <option value="v">vrouw — néerlandaise, seule, perdue</option>
+          <option value="m">man — néerlandais, seul, perdu</option>
+        </select>
+      </div>
+      <div class="veld">
+        <label for="set-niveau">Beginniveau</label>
+        <select id="set-niveau">
+          <option value="nul">Ik begin vanaf nul</option>
+          <option value="iets">Ik ken al enkele Franse woorden</option>
+        </select>
+      </div>
+      <p class="mini" id="set-bevestiging" role="status" style="margin-top:10px"></p>
+    </div>
+
+    <div class="kaart">
+      <h2>Uitspraak</h2>
+      <p class="uitleg mini" id="stem-status">Controleren of dit apparaat een Franse stem heeft…</p>
+    </div>
+
+    <div class="kaart">
+      <h2>Opnieuw beginnen</h2>
+      <p class="uitleg mini">Wist je voltooide lessen, favorieten, scores en instellingen op dit apparaat.</p>
+      <button class="knop omlijnd breed" type="button" id="wis-knop">Voortgang wissen</button>
+      <div id="wis-bevestig" hidden style="margin-top:12px">
+        <p class="mini">Zeker weten? Dit kan niet ongedaan worden gemaakt.</p>
+        <div class="knoprij">
+          <button class="knop primair" type="button" id="wis-ja">Ja, wis alles</button>
+          <button class="knop omlijnd" type="button" id="wis-nee">Nee, laat maar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Beeldvullende weergave om aan iemand te laten lezen -->
+<div class="groot-scherm" id="groot" role="dialog" aria-modal="true" aria-labelledby="groot-fr" hidden>
+  <p class="g-fr" id="groot-fr" lang="fr"></p>
+  <p class="g-nl" id="groot-nl"></p>
+  <p class="g-ph" id="groot-ph"></p>
+  <div class="g-acties">
+    <button class="icoonknop" type="button" id="groot-spreek">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-geluid"/></svg> Luister
+    </button>
+    <button class="knop primair" type="button" id="groot-sluit">Sluiten</button>
+  </div>
+</div>
+
+<nav class="hoofdnav" aria-label="Hoofdnavigatie">
+  <button type="button" data-ga="leren">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-leren"/></svg>Leren
+  </button>
+  <button type="button" data-ga="oefenen">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-oefenen"/></svg>Oefenen
+  </button>
+  <button type="button" data-ga="zinnenboek">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-boek"/></svg>Zinnenboek
+  </button>
+  <button type="button" data-ga="favorieten">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-hart"/></svg>Favorieten
+  </button>
+  <button type="button" data-ga="voortgang">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-grafiek"/></svg>Voortgang
+  </button>
+</nav>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
